@@ -8,6 +8,11 @@ export interface BaseResponse<T = any> {
   data: T
 }
 
+export interface LoginInfo {
+  username: string;
+  password: string;
+}
+
 export namespace ApiData {
   // 带有返回值data的情况
   namespace Example {

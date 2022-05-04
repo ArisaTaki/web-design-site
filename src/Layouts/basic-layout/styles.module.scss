@@ -1,0 +1,207 @@
+.main {
+  height: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+
+  .trigger {
+    padding: 0 24px;
+    font-size: 18px;
+    line-height: 64px;
+    cursor: pointer;
+    transition: color 0.3s;
+    color: #ffffff;
+
+    &:hover {
+      color: #1890ff;
+    }
+  }
+
+  .search-area {
+    display: flex;
+    align-items: center;
+    background: #eef1f2;
+    border-radius: 15px;
+    width: 180px;
+
+    .search {
+      background: #eef1f2;
+      width: 150px;
+      border-top-left-radius: 15px;
+      border-bottom-left-radius: 15px;
+      border: none;
+
+      &:focus {
+        background: #ffffff;
+        box-shadow: none;
+      }
+    }
+
+    .search-icon {
+      padding: 10px;
+      display: block;
+      height: 22px;
+      width: 22px;
+      background: url("../../assets/search.svg") no-repeat;
+      background-size: cover;
+      cursor: pointer;
+      margin-left: 2px;
+    }
+  }
+}
+
+.logo {
+  height: 64px;
+  background: rgb(0, 170, 245);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    width: 44px;
+    height: 44px;
+    background: url("../../assets/E-logo.svg") no-repeat;
+    display: block;
+    background-size: cover;
+  }
+
+  span {
+    color: #fff;
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: .1em;
+    text-align: center;
+
+    &.collapsed {
+      display: none;
+    }
+  }
+}
+
+.aside {
+  background: #ffffff;
+}
+
+.site-layout  {
+  .site-layout-background {
+    overflow-y: auto;
+    background: #fff;
+  }
+
+  .header {
+    background: rgb(0, 170, 245);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      .avatar {
+        margin-right: 16px;
+        display: flex;
+        height: 100%;
+        align-items: center;
+
+        .avatar-img {
+          margin-right: 10px;
+          cursor: pointer;
+        }
+
+        .user-info {
+          display: flex;
+          height: 100%;
+          flex-direction: column;
+          padding: 15px 0px;
+
+          .name {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: .1em;
+            text-align: center;
+          }
+        }
+      }
+
+      .control {
+        &:hover {
+          background: rgb(0, 155, 260);
+        }
+
+        .login-button {
+          cursor: pointer;
+          color: #fff;
+          display: flex;
+          font-size: 14px;
+          font-weight: bold;
+          letter-spacing: .1em;
+          padding: 10px 15px;
+          align-items: center;
+
+          &:after {
+            display: block;
+            height: 22px;
+            width: 22px;
+            background: url("../../assets/down.svg") no-repeat;
+            background-size: cover;
+            content: "";
+          }
+        }
+      }
+    }
+  }
+}
+
+.site-layout-background {
+  position: relative;
+
+  .login-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    right: 0px;
+    top: 0px;
+    width: 280px;
+    height: 214px;
+    position: absolute;
+    color: #58666e;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-top: 0;
+    border: 1px solid rgba(0,0,0,.1);
+    border-radius: 2px;
+    box-shadow: 0 2px 6px #f9f9f9;
+
+    .submit-button {
+      background: rgb(0, 170, 245);
+    }
+  }
+}
+
+.icon {
+  color: #ffffff;
+}
+
+.control-icon-single {
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  padding-right: 10px;
+
+  span {
+    margin-left: 5px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+  }
+}

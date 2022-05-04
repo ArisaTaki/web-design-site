@@ -3,7 +3,8 @@ const routerPath = {
   NotFind: '/404',
   NoAuth: '/403',
   Home: '/',
-  Login: '/login',
+  testRoute: '/test',
+  quitTestRoute: '/question',
 };
 
 export default routerPath;

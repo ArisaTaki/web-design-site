@@ -4,6 +4,6 @@ import styles from './styles.module.scss';
 
 const cx = classNames.bind(styles);
 
-const Home: React.FC = () => <div>Home</div>;
+const TestCom: React.FC = () => <div>TestCom</div>;
 
-export default Home;
+export default TestCom;
