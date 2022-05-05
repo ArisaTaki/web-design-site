@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import className from 'classnames/bind';
 import {
-  Avatar, Button, Input, Layout, Menu, MenuProps, Space,
+  Avatar, Button, Input, Layout, Menu, MenuProps, message, Space,
 } from 'antd';
 import {
   HomeOutlined,
@@ -13,13 +13,16 @@ import {
 import backGroundImage from '../../assets/amanohina.jpg';
 import history from '@/utils/getHistory';
 import styles from './styles.module.scss';
-import { getUserInfoStore } from '@/utils/storageUtils';
+import { getUser, saveToken, saveUser } from '@/utils/storageUtils';
 import routerPath from '@/router/router-path';
 import { LoginInfo } from '@/services/entities';
+import { ServicesApi } from '@/services/services-api';
 
 const cx = className.bind(styles);
 
 const { Header, Sider, Content } = Layout;
+
+const { Login } = ServicesApi;
 
 export interface BasicLayoutProps {
   // eslint-disable-next-line react/no-unused-prop-types
@@ -35,16 +38,16 @@ interface IconsProps {
 }
 
 const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
-  const [userInfo, setUserInfo] = useState();
+  const [userInfo, setUserInfo] = useState({ username: '', image: '' });
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loginFlag, setLoginFlag] = useState(false);
   const [showLoginModalFlag, setShowLoginModalFlag] = useState(false);
   const [searchInfo, setSearchInfo] = useState('');
-  const [loginInfo, setLoginInfo] = useState<LoginInfo>({ username: '', password: '' });
+  const [loginInfo, setLoginInfo] = useState<LoginInfo>({ email: '', password: '' });
 
   useEffect(() => {
-    setUserInfo(getUserInfoStore());
-    setLoginFlag(!!getUserInfoStore());
+    setUserInfo(getUser());
+    setLoginFlag(!!getUser());
   }, []);
 
   const getItem = (
@@ -101,13 +104,13 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
     <div className={cx('avatar')}>
       <Avatar
         className={cx('avatar-img')}
-        src="https://s0.lgstatic.com/i/image6/M01/1F/6B/Cgp9HWBR1z2AB8UTAAG87bdA0lA648.jpg"
+        src={userInfo?.image ?? 'https://s0.lgstatic.com/i/image6/M01/1F/6B/Cgp9HWBR1z2AB8UTAAG87bdA0lA648.jpg'}
       />
       <div className={cx('user-info')}>
         <div className={cx('name')}>
           Hi!
           {/* TODO 用户信息 */}
-          {userInfo ?? 'eiko'}
+          {userInfo?.username ?? 'eiko'}
         </div>
       </div>
     </div>
@@ -116,12 +119,13 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
   const renderLoginModal = () => (
     // e.stopPropagation 是阻止冒泡
     <div className={cx('login-card')} onClick={(e) => { e.stopPropagation(); }}>
-      <span>username</span>
+      <span>email</span>
       <Input
-        placeholder="username or email"
-        value={loginInfo?.username}
+        autoComplete="new-password"
+        placeholder="email"
+        value={loginInfo?.email}
         onChange={(e) => {
-          setLoginInfo({ ...loginInfo, username: e.target.value });
+          setLoginInfo({ ...loginInfo, email: e.target.value });
         }}
       />
       <span>password</span>
@@ -141,7 +145,15 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
         type="primary"
         className={cx('submit-button')}
         onClick={() => {
-          console.log(loginInfo);
+          Login({ user: loginInfo }).then((res) => {
+            saveUser({ username: res.data.username, image: res.data.image! });
+            saveToken(res.data.token);
+            setLoginFlag(true);
+            setShowLoginModalFlag(false);
+            setUserInfo({ username: res.data.username, image: res.data.image! });
+          }).catch((err) => {
+            message.warning(err.message);
+          });
         }}
       >
         Login

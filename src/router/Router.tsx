@@ -3,7 +3,6 @@
  * 2.一般情况下使用BrowserHistory
  * 3.是否需要权限请务必自行书写路由组件进行响应拦截等操作:
  *   MainControllerRoute：需要登录权限
- *   LoginControllerRoute：专供登录使用，登录后不可再进入，除非退出登录
  * */
 
 import React from 'react';

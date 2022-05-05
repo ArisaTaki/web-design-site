@@ -9,19 +9,23 @@ export interface BaseResponse<T = any> {
 }
 
 export interface LoginInfo {
-  username: string;
+  email: string;
   password: string;
 }
 
 export namespace ApiData {
   // 带有返回值data的情况
-  namespace Example {
+  namespace Login {
     interface Params {
-      example: string
+      user: LoginInfo
     }
 
     interface ResponseData extends BaseResponse<ResponseData> {
-      example: string
+      _id: string;
+      username: string;
+      email: string;
+      image?: string;
+      token: string;
     }
     type Response = BaseResponse<ResponseData>;
   }
