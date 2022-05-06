@@ -10,6 +10,8 @@ export const ServicesApi = {
   Login: (params: ApiData.Login.Params):
   Promise<ApiData.Login.ResponseData> => post(ApiPaths.login, params),
 
+  getLoginInfo: (): Promise<ApiData.GetLoginInfo.ResponseData> => get(ApiPaths.getLoginInfo),
+
   exampleHasResApi: (params: ApiData.ExampleNotRes.Params):
   Promise<ApiData.ExampleNotRes.Response> => post(ApiPaths.exampleNotRes, params),
 };

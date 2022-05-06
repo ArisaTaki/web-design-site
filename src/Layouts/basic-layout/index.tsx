@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import className from 'classnames/bind';
 import {
   Avatar, Button, Input, Layout, Menu, MenuProps, message, Space,
@@ -13,20 +13,21 @@ import {
 import backGroundImage from '../../assets/amanohina.jpg';
 import history from '@/utils/getHistory';
 import styles from './styles.module.scss';
-import { getUser, saveToken, saveUser } from '@/utils/storageUtils';
+import { getUser, saveUser } from '@/utils/storageUtils';
 import routerPath from '@/router/router-path';
 import { LoginInfo } from '@/services/entities';
 import { ServicesApi } from '@/services/services-api';
+import { addEvents } from '@/utils/addEventListenerForLocalStorage';
 
 const cx = className.bind(styles);
 
 const { Header, Sider, Content } = Layout;
 
-const { Login } = ServicesApi;
+const { Login, getLoginInfo } = ServicesApi;
 
 export interface BasicLayoutProps {
   // eslint-disable-next-line react/no-unused-prop-types
-  example?: string
+  example?: any
 }
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -37,7 +38,9 @@ interface IconsProps {
   subTitle: string
 }
 
-const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
+addEvents();
+
+const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
   const [userInfo, setUserInfo] = useState({ username: '', image: '' });
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loginFlag, setLoginFlag] = useState(false);
@@ -45,9 +48,25 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
   const [searchInfo, setSearchInfo] = useState('');
   const [loginInfo, setLoginInfo] = useState<LoginInfo>({ email: '', password: '' });
 
+  window.addEventListener('setItemEvent', () => {
+    setLoginFlag(true);
+  });
+  window.addEventListener('removeItemEvent', () => {
+    setLoginFlag(false);
+  });
+
+  const checkLoginInfo = () => {
+    getLoginInfo().then((res) => {
+      const { username, image } = res.data;
+      setUserInfo({ username, image });
+      setLoginFlag(true);
+    }).catch((res) => {});
+  };
+
   useEffect(() => {
-    setUserInfo(getUser());
-    setLoginFlag(!!getUser());
+    if (getUser()) {
+      checkLoginInfo();
+    }
   }, []);
 
   const getItem = (
@@ -146,8 +165,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
         className={cx('submit-button')}
         onClick={() => {
           Login({ user: loginInfo }).then((res) => {
-            saveUser({ username: res.data.username, image: res.data.image! });
-            saveToken(res.data.token);
+            const { username, image, token } = res.data;
+            saveUser({ username, image, token });
             setLoginFlag(true);
             setShowLoginModalFlag(false);
             setUserInfo({ username: res.data.username, image: res.data.image! });
@@ -205,6 +224,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children }) => {
           <span className={cx({ collapsed })}>EIKO FUN</span>
         </div>
         <Menu
+          selectedKeys={[history.location.pathname]}
           onClick={onClick}
           defaultSelectedKeys={[routerPath.Home]}
           defaultOpenKeys={['groupOne']}

@@ -4,7 +4,7 @@ export interface BaseResponse<T = any> {
   // 返回message
   message: string
   // 状态code：200 success。201 error，之后再细分
-  code: string
+  code: number
   data: T
 }
 
@@ -24,8 +24,20 @@ export namespace ApiData {
       _id: string;
       username: string;
       email: string;
-      image?: string;
+      image: string;
       token: string;
+    }
+    type Response = BaseResponse<ResponseData>;
+  }
+
+  namespace GetLoginInfo {
+    interface ResponseData extends BaseResponse<ResponseData> {
+      _id: string;
+      username: string;
+      email: string;
+      image: string;
+      createdAt: string;
+      updateAt: string;
     }
     type Response = BaseResponse<ResponseData>;
   }

@@ -1,9 +1,13 @@
 // 封装axios（Demo，改良由你自己来）
 import axios, { AxiosRequestConfig } from 'axios';
+import { message } from 'antd';
 import { mockApiPath, onlineApiPath } from '@/constant/constants';
-import { getToken, getUser } from '@/utils/storageUtils';
-import { moveToSystemError403Page } from '@/helpers/history';
+import { deleteUser, getUser } from '@/utils/storageUtils';
+import { moveToSystemError403Page, replaceWithDelay } from '@/helpers/history';
+import history from '@/utils/getHistory';
+import routerPath from '@/router/router-path';
 
+// eslint-disable-next-line import/no-mutable-exports
 if (process.env.NODE_ENV === 'development') {
   axios.defaults.baseURL = mockApiPath;
 }
@@ -17,9 +21,14 @@ instance.defaults.headers.get['Content-Type'] = 'application/json';
 instance.defaults.headers.post['Content-Type'] = 'application/json';
 
 instance.interceptors.request.use(
-  (config) => {
-    if (getToken() && config.headers) {
-      config.headers.Authorization = getToken();
+  async (config) => {
+    // eslint-disable-next-line no-param-reassign
+    if (config.headers) {
+      config.headers['X-Intramart-Session'] = 'keep';
+      const user = await getUser();
+      if (user) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
     }
     return config;
   },
@@ -39,8 +48,12 @@ instance.interceptors.response.use(
     }
     const res = error.response.data;
     // 处理403
-    if (res.code === '403') {
+    if (res.code === 403) {
       moveToSystemError403Page(true);
+      return Promise.reject(res);
+    }
+    if (res.code === 401) {
+      deleteUser();
       return Promise.reject(res);
     }
     return Promise.reject(res);
