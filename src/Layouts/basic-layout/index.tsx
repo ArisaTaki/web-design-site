@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import className from 'classnames/bind';
 import {
-  Avatar, Button, Input, Layout, Menu, MenuProps, message, Space,
+  Avatar, Button, Dropdown, Input, Layout, Menu, MenuProps, message, Space,
 } from 'antd';
 import {
   HomeOutlined,
   QuestionCircleOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  AppstoreOutlined, EyeTwoTone, EyeInvisibleOutlined, UserOutlined, FormOutlined, BellOutlined,
+  AppstoreOutlined,
+  EyeTwoTone,
+  EyeInvisibleOutlined,
+  UserOutlined,
+  FormOutlined,
+  BellOutlined,
+  ImportOutlined, GithubOutlined,
 } from '@ant-design/icons';
 import backGroundImage from '../../assets/amanohina.jpg';
 import history from '@/utils/getHistory';
 import styles from './styles.module.scss';
-import { getUser, saveUser } from '@/utils/storageUtils';
+import { deleteUser, getUser, saveUser } from '@/utils/storageUtils';
 import routerPath from '@/router/router-path';
 import { LoginInfo } from '@/services/entities';
 import { ServicesApi } from '@/services/services-api';
@@ -40,13 +46,15 @@ interface IconsProps {
 
 addEvents();
 
+const initLoginInputInfo = { email: '', password: '' };
+
 const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
   const [userInfo, setUserInfo] = useState({ username: '', image: '' });
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [loginFlag, setLoginFlag] = useState(false);
   const [showLoginModalFlag, setShowLoginModalFlag] = useState(false);
   const [searchInfo, setSearchInfo] = useState('');
-  const [loginInfo, setLoginInfo] = useState<LoginInfo>({ email: '', password: '' });
+  const [loginInfo, setLoginInfo] = useState<LoginInfo>(initLoginInputInfo);
 
   window.addEventListener('setItemEvent', () => {
     setLoginFlag(true);
@@ -69,6 +77,11 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
     }
   }, []);
 
+  const userInfoOperateMenu = {
+    showInfo: 'showUser',
+    quitLogin: 'quitUser',
+  };
+
   const getItem = (
     label: React.ReactNode,
     key: React.Key,
@@ -86,9 +99,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
   } as MenuItem);
 
   const rightIcons: IconsProps[] = [{
-    icon: <UserOutlined className={cx('icon')} />,
+    icon: <GithubOutlined className={cx('icon')} />,
     clickEvent: () => {
-      console.log('点击了用户icon');
+      window.open('https://github.com/ArisaTaki');
     },
     subTitle: 'About me',
   }, {
@@ -119,20 +132,39 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
     history.push(e.key);
   };
 
+  const userInfoDropDownItems: MenuProps['items'] = [
+    getItem('个人信息', userInfoOperateMenu.showInfo, <UserOutlined />),
+    getItem('退出', userInfoOperateMenu.quitLogin, <ImportOutlined />),
+  ];
+
+  const userInfoDropDownOnclick: MenuProps['onClick'] = (e) => {
+    if (e.key === userInfoOperateMenu.showInfo) {
+      console.log('跳转个人信息详情');
+    } else {
+      deleteUser();
+    }
+  };
+
+  const renderUserInfoDropDownMenu = () => (
+    <Menu items={userInfoDropDownItems} onClick={userInfoDropDownOnclick} />
+  );
+
   const renderUserInfoFunc = () => (
-    <div className={cx('avatar')}>
-      <Avatar
-        className={cx('avatar-img')}
-        src={userInfo?.image ?? 'https://s0.lgstatic.com/i/image6/M01/1F/6B/Cgp9HWBR1z2AB8UTAAG87bdA0lA648.jpg'}
-      />
-      <div className={cx('user-info')}>
-        <div className={cx('name')}>
-          Hi!
-          {/* TODO 用户信息 */}
-          {userInfo?.username ?? 'eiko'}
+    <Dropdown overlay={renderUserInfoDropDownMenu} placement="top">
+      <div className={cx('avatar')}>
+        <Avatar
+          className={cx('avatar-img')}
+          src={userInfo?.image ?? 'https://s0.lgstatic.com/i/image6/M01/1F/6B/Cgp9HWBR1z2AB8UTAAG87bdA0lA648.jpg'}
+        />
+        <div className={cx('user-info')}>
+          <div className={cx('name')}>
+            Hi!
+            {/* TODO 用户信息 */}
+            {userInfo?.username ?? 'eiko'}
+          </div>
         </div>
       </div>
-    </div>
+    </Dropdown>
   );
 
   const renderLoginModal = () => (
@@ -165,6 +197,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = ({ children, example }) => {
         className={cx('submit-button')}
         onClick={() => {
           Login({ user: loginInfo }).then((res) => {
+            setLoginInfo(initLoginInputInfo);
             const { username, image, token } = res.data;
             saveUser({ username, image, token });
             setLoginFlag(true);
